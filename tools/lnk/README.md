@@ -14,3 +14,6 @@ Advanced browser-based forensic tool for analyzing Windows LNK files.
 2. Upload JSON file into the platform
 3. Analyze results in browser
 
+## Demo
+
+https://jxroot.github.io/dfir/tools/lnk/
