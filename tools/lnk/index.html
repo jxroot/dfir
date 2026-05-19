@@ -1,0 +1,1132 @@
+<!-- https://github.com/jxroot/ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LNK Analysis Platform </title>
+
+<style>
+:root {
+    --bg-primary: #0a0c10;
+    --bg-secondary: #111418;
+    --bg-tertiary: #1a1f26;
+    --bg-card: #0f1318;
+    --border: #232830;
+    --text-primary: #e8edf2;
+    --text-secondary: #8b949e;
+    --text-muted: #5c666f;
+    --accent-blue: #3b82f6;
+    --accent-cyan: #06b6d4;
+    --accent-purple: #8b5cf6;
+    --accent-green: #10b981;
+    --accent-orange: #f59e0b;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --upload-bg: #1a1f26;
+    --upload-border: #232830;
+    --upload-hover: rgba(59, 130, 246, 0.1);
+}
+
+:root.light {
+    --bg-primary: #f3f4f6;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #e5e7eb;
+    --bg-card: #ffffff;
+    --border: #d1d5db;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    --accent-blue: #2563eb;
+    --accent-cyan: #0891b2;
+    --accent-purple: #7c3aed;
+    --gradient-1: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    --upload-bg: #f9fafb;
+    --upload-border: #d1d5db;
+    --upload-hover: rgba(37, 99, 235, 0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-x: hidden; transition: background-color 0.3s ease; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; }
+
+.glass-header { background: var(--bg-secondary); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 1rem 2rem; position: sticky; top: 0; z-index: 100; }
+.header-content { display: flex; justify-content: space-between; align-items: center; max-width: 1600px; margin: 0 auto; }
+.logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 700; background: var(--gradient-1); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.theme-toggle { background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.2s; }
+.theme-toggle:hover { background: var(--accent-blue); transform: scale(1.05); }
+
+.tab-container { display: flex; gap: 8px; background: var(--bg-secondary); padding: 6px; border-radius: 50px; margin-bottom: 32px; border: 1px solid var(--border); flex-wrap: wrap;margin-top: 20px; }
+.tab { padding: 12px 24px; background: transparent; border: none; color: var(--text-secondary); cursor: pointer; border-radius: 40px; transition: all 0.3s; font-size: 0.875rem; font-weight: 600; }
+.tab:hover { color: var(--text-primary); background: rgba(59, 130, 246, 0.1); }
+.tab.active { background: var(--gradient-1); color: white; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
+.tab-icon { margin-right: 8px; }
+.tab-content { display: none; animation: fadeIn 0.4s ease; }
+.tab-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.container { max-width: 1600px; margin: 0 auto; padding: 0 24px 24px 24px; }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 24px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
+.card:hover { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); }
+.card-header { padding: 1.2rem 1.8rem; background: var(--bg-secondary); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.card-title { font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.card-body { padding: 1.5rem; overflow-x: auto; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 1.2rem; position: relative; overflow: hidden; }
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gradient-1); }
+.stat-card:hover { transform: translateY(-3px); border-color: var(--accent-blue); }
+.stat-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; }
+.stat-value { font-size: 2rem; font-weight: 700; background: var(--gradient-1); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+.search-box { position: relative; margin-bottom: 16px; }
+.search-input { width: 100%; background: var(--bg-card); border: 2px solid var(--border); color: var(--text-primary); padding: 14px 16px 14px 48px; border-radius: 14px; font-size: 0.9rem; transition: all 0.2s; }
+.search-input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+.search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.1rem; }
+.search-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; margin-bottom: 20px; padding: 12px 16px; background: var(--bg-tertiary); border-radius: 14px; }
+.search-tag { background: var(--bg-card); border: 1px solid var(--border); color: var(--accent-cyan); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-family: 'Courier New', monospace; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.search-tag:hover { background: var(--accent-blue); color: white; border-color: var(--accent-blue); transform: translateY(-2px); }
+.search-tag-desc { color: var(--text-muted); font-size: 0.65rem; font-weight: normal; margin-left: 6px; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+.data-table th { text-align: left; padding: 12px; background: var(--bg-tertiary); color: var(--text-secondary); font-weight: 600; border-bottom: 1px solid var(--border); }
+.data-table td { padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.data-table tr:hover { background: rgba(59, 130, 246, 0.05); }
+
+.pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+.pagination button { background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.75rem; }
+.pagination button:hover:not(:disabled) { background: var(--accent-blue); border-color: var(--accent-blue); }
+.pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+.pagination .active-page { background: var(--accent-blue); border-color: var(--accent-blue); }
+.page-info { color: var(--text-secondary); font-size: 0.75rem; margin-left: 12px; }
+
+.ioc-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin: 3px; cursor: pointer; transition: all 0.2s; }
+.ioc-badge:hover { transform: scale(1.02); opacity: 0.9; }
+.ioc-ip { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+.ioc-url { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+.ioc-domain { background: rgba(59, 130, 246, 0.2); color: var(--info); }
+.ioc-unc { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+.ioc-powershell { background: rgba(139, 92, 246, 0.2); color: var(--accent-purple); }
+.ioc-cmd { background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); }
+
+.rule-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin: 2px; }
+.rule-critical { background: rgba(239, 68, 68, 0.2); color: var(--danger); border-left: 3px solid var(--danger); }
+.rule-high { background: rgba(245, 158, 11, 0.2); color: var(--warning); border-left: 3px solid var(--warning); }
+.rule-medium { background: rgba(59, 130, 246, 0.2); color: var(--info); border-left: 3px solid var(--info); }
+.rule-tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.65rem; font-weight: 500; margin: 2px; background: var(--bg-tertiary); color: var(--text-secondary); }
+
+.empty-state { text-align: center; padding: 60px 20px; background: var(--bg-card); border-radius: 16px; }
+.empty-icon { font-size: 4rem; margin-bottom: 16px; opacity: 0.5; }
+.empty-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
+.empty-message { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 20px; }
+.empty-hint { font-size: 0.75rem; color: var(--text-muted); background: var(--bg-tertiary); display: inline-block; padding: 8px 16px; border-radius: 20px; }
+
+.upload-area { background: var(--upload-bg); border: 2px dashed var(--upload-border); border-radius: 16px; padding: 32px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.upload-area:hover { border-color: var(--accent-blue); background: var(--upload-hover); }
+.upload-area.drag-over { border-color: var(--accent-blue); background: var(--upload-hover); transform: scale(1.01); }
+.upload-area input { display: none; }
+.upload-icon { font-size: 3rem; margin-bottom: 12px; }
+.upload-text { font-size: 0.875rem; color: var(--text-secondary); }
+.upload-text strong { color: var(--accent-blue); }
+
+.btn { padding: 8px 18px; border-radius: 10px; border: none; cursor: pointer; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+.btn-primary { background: var(--accent-blue); color: white; }
+.btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
+.btn-secondary { background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--border); color: var(--text-primary); }
+
+.button-group { display: flex; gap: 12px; margin-top: 16px; }
+.filter-group { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px; background: var(--bg-tertiary); border-radius: 12px; }
+.filter-group label { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-secondary); cursor: pointer; }
+
+.diff-new { color: var(--success); font-weight: 600; }
+.diff-del { color: var(--danger); font-weight: 600; }
+.diff-mod { color: var(--warning); font-weight: 600; }
+
+.ioc-item { background: var(--bg-tertiary); border-radius: 12px; margin-bottom: 12px; overflow: hidden; border: 1px solid var(--border); }
+.ioc-header { padding: 12px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.ioc-header:hover { background: rgba(59, 130, 246, 0.1); }
+.ioc-value { font-family: monospace; font-size: 0.8rem; font-weight: 600; }
+.ioc-arrow { transition: transform 0.3s ease; font-size: 1rem; color: var(--text-muted); }
+.ioc-arrow.expanded { transform: rotate(90deg); }
+.ioc-details { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: var(--bg-card); }
+.ioc-details.expanded { max-height: 500px; }
+.ioc-details-content { padding: 16px; border-top: 1px solid var(--border); }
+.ioc-source-item { padding: 8px 12px; margin-bottom: 8px; background: var(--bg-secondary); border-radius: 8px; font-size: 0.75rem; }
+.ioc-source-name { color: var(--accent-cyan); font-weight: 600; font-family: monospace; }
+.ioc-source-path { color: var(--text-muted); font-family: monospace; font-size: 0.65rem; word-break: break-all; margin-top: 4px; }
+
+.path { color: var(--accent-cyan); font-family: monospace; font-size: 0.75rem; word-break: break-all; }
+.rule-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-blue); }
+.code-block { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 14px; padding: 20px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 0.75rem; line-height: 1.5; color: var(--text-secondary); }
+.notification { position: fixed; top: 80px; right: 20px; padding: 12px 20px; background: var(--bg-tertiary); border-left: 4px solid var(--success); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000; animation: slideIn 0.3s ease; color: var(--text-primary); }
+.notification.error { border-left-color: var(--danger); }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+@media (max-width: 768px) { .tab { padding: 8px 12px; font-size: 0.7rem; } .card-header { flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+
+<div class="glass-header">
+    <div class="header-content">
+        <div class="logo"><span>🔍</span><span>LNK Analysis Platform</span></div>
+        <div class="header-actions"><button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙</button></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="tab-container">
+        <button class="tab active" onclick="switchTab('analysis')"><span class="tab-icon">📊</span> LNK Analysis</button>
+        <button class="tab" onclick="switchTab('rules')"><span class="tab-icon">⚠️</span> Rule Engine <span style="font-size: 0.7rem;">(16)</span></button>
+        <button class="tab" onclick="switchTab('diff')"><span class="tab-icon">🔄</span> Diff Analysis</button>
+        <button class="tab" onclick="switchTab('ioc')"><span class="tab-icon">🔍</span> IOC Extraction</button>
+        <button class="tab" onclick="switchTab('script')"><span class="tab-icon">📜</span> Script</button>
+    </div>
+
+    <div id="analysisTab" class="tab-content active">
+        <div class="card">
+            <div class="card-header"><div class="card-title">📁 Load LNK Data</div></div>
+            <div class="card-body">
+                <div class="upload-area" id="mainUploadArea" onclick="document.getElementById('mainDataFile').click()">
+                    <div class="upload-icon">📂</div>
+                    <div class="upload-text"><strong>Click to upload</strong> or drag & drop<br>JSON file here</div>
+                    <input type="file" id="mainDataFile" accept=".json">
+                    <div id="mainFileName" style="font-size: 0.75rem; margin-top: 8px; color: var(--text-muted);"></div>
+                </div>
+            </div>
+        </div>
+        <div id="analysisTableContainer"></div>
+    </div>
+
+    <div id="rulesTab" class="tab-content">
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-title">Total Rules</div><div class="stat-value" id="ruleCount">0</div></div>
+            <div class="stat-card"><div class="stat-title">Active Rules</div><div class="stat-value" id="activeRuleCount">0</div></div>
+            <div class="stat-card"><div class="stat-title">Files with Issues</div><div class="stat-value" id="fileWithIssues">0</div></div>
+            <div class="stat-card"><div class="stat-title">Critical Files</div><div class="stat-value" id="criticalCountStat" style="color: var(--danger);">0</div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><div class="card-title">⚙️ Advanced Detection Rules (16 Rules)</div></div>
+            <div class="card-body">
+                <div id="ruleEditor"></div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="selectAllRules(true)">✅ Select All</button>
+                    <button class="btn btn-secondary" onclick="selectAllRules(false)">❌ Deselect All</button>
+                    <button class="btn btn-primary" onclick="runRules()">🔍 Analyze with Selected Rules</button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><div class="card-title">🎯 Rule Violations (Grouped by File)</div></div>
+            <div class="card-body"><div id="violationsContainer"></div></div>
+        </div>
+    </div>
+
+    <div id="diffTab" class="tab-content">
+        <div class="card">
+            <div class="card-header"><div class="card-title">🔄 Compare Two LNK Datasets</div></div>
+            <div class="card-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div class="upload-area" id="oldUploadArea" onclick="document.getElementById('oldFile').click()">
+                        <div class="upload-icon">📄</div>
+                        <div class="upload-text"><strong>Load Old Version</strong><br>Click or drag & drop</div>
+                        <input type="file" id="oldFile" accept=".json">
+                        <div id="oldFileName" style="font-size: 0.75rem; margin-top: 8px; color: var(--text-muted);"></div>
+                    </div>
+                    <div class="upload-area" id="newUploadArea" onclick="document.getElementById('newFile').click()">
+                        <div class="upload-icon">📄</div>
+                        <div class="upload-text"><strong>Load New Version</strong><br>Click or drag & drop</div>
+                        <input type="file" id="newFile" accept=".json">
+                        <div id="newFileName" style="font-size: 0.75rem; margin-top: 8px; color: var(--text-muted);"></div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label><input type="checkbox" class="df" value="TargetPath" checked> Target Path</label>
+                    <label><input type="checkbox" class="df" value="Arguments" checked> Arguments</label>
+                    <label><input type="checkbox" class="df" value="WorkingDir" checked> Working Dir</label>
+                    <label><input type="checkbox" class="df" value="IconLocation"> Icon Location</label>
+                    <label><input type="checkbox" class="df" value="Description"> Description</label>
+                    <label><input type="checkbox" class="df" value="FullPath" checked> Full Path</label>
+                    <label><input type="checkbox" class="df" value="SizeKB"> Size (KB)</label>
+                </div>
+                <button class="btn btn-primary" onclick="runDiff()" style="width: 100%; margin-bottom: 20px;">🔍 Compare Files</button>
+                <div id="diffStats" style="color: var(--text-secondary); font-size: 0.75rem; margin-bottom: 16px;"></div>
+                <div id="diffContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="iocTab" class="tab-content">
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-title">Total IPs</div><div class="stat-value" id="totalIPs">0</div></div>
+            <div class="stat-card"><div class="stat-title">Total URLs</div><div class="stat-value" id="totalURLs">0</div></div>
+            <div class="stat-card"><div class="stat-title">Total Domains</div><div class="stat-value" id="totalDomains">0</div></div>
+            <div class="stat-card"><div class="stat-title">UNC Paths</div><div class="stat-value" id="totalUNCs">0</div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><div class="card-title">🔍 Indicators of Compromise (IOC) Extraction</div><div style="font-size: 0.7rem; color: var(--text-muted);">⚠️ Click on any IOC to see source files</div></div>
+            <div class="card-body"><div id="iocContainer"></div></div>
+        </div>
+    </div>
+
+    <div id="scriptTab" class="tab-content">
+        <div class="card">
+            <div class="card-header"><div class="card-title">📜 PowerShell LNK Extractor Script</div><button class="btn btn-secondary" onclick="copyScriptToClipboard()">📋 Copy Script</button></div>
+            <div class="card-body">
+                <div class="code-block"><pre id="scriptContent" style="margin: 0; font-family: 'Courier New', monospace; white-space: pre-wrap; word-break: break-all; font-size: 0.75rem;"># PowerShell LNK Extractor Script
+
+$showPaths = $true
+
+# Collect all filesystem roots
+$drives = @()
+
+# Standard drives
+$drives += Get-PSDrive -PSProvider FileSystem |
+    Select-Object -ExpandProperty Root
+
+# Mounted volumes without drive letters
+$volumeGuids = mountvol.exe |
+    Select-String '\\\?\\Volume\{.*\}\\' |
+    ForEach-Object { $_.Matches.Value }
+
+$drives += $volumeGuids
+$drives = $drives | Sort-Object -Unique
+
+$wsh = New-Object -ComObject WScript.Shell
+
+$results = foreach ($drive in $drives) {
+
+    Write-Host "[*] Scanning $drive"
+
+    Get-ChildItem `
+        -LiteralPath $drive `
+        -Filter "*.lnk" `
+        -File `
+        -Force `
+        -Recurse `
+        -ErrorAction SilentlyContinue |
+
+    ForEach-Object {
+
+        try {
+
+            $shortcut = $wsh.CreateShortcut($_.FullName)
+
+            [PSCustomObject]@{
+                ScanRoot       = $drive
+                Name           = $_.Name
+                FullPath       = $_.FullName
+                Directory      = $_.DirectoryName
+                SizeKB         = [math]::Round($_.Length / 1KB, 2)
+
+                CreationTime   = $_.CreationTimeUtc
+                LastAccessTime = $_.LastAccessTimeUtc
+                LastWriteTime  = $_.LastWriteTimeUtc
+
+                Attributes     = $_.Attributes.ToString()
+
+                TargetPath     = $shortcut.TargetPath
+                Arguments      = $shortcut.Arguments
+                WorkingDir     = $shortcut.WorkingDirectory
+                Description    = $shortcut.Description
+                IconLocation   = $shortcut.IconLocation
+                Hotkey         = $shortcut.Hotkey
+                WindowStyle    = $shortcut.WindowStyle
+            }
+
+        } catch {
+
+            [PSCustomObject]@{
+                ScanRoot = $drive
+                Name     = $_.Name
+                FullPath = $_.FullName
+                Error    = "Failed to parse shortcut"
+            }
+        }
+    }
+}
+
+# Remove duplicates
+$results = $results | Sort-Object FullPath -Unique
+
+
+# =========================
+# JSON OUTPUT
+# =========================
+$outJson = ".\out.json"
+$results | ConvertTo-Json -Depth 6 | Set-Content $outJson -Encoding UTF8
+Write-Host "[+] JSON saved to $outJson"
+
+
+                </pre></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const AppState = {
+    lnkData: [],
+    filteredData: [],
+    rules: [],
+    compiledRules: [],
+    flatViolations: [],
+    groupedViolations: [],
+    searchCache: [],
+    oldDiffData: null,
+    newDiffData: null,
+    currentPage: 1,
+    rowsPerPage: 100,
+    currentTab: 'analysis',
+    iocs: null
+};
+
+const scheduleIdle = window.requestIdleCallback || function(cb) { setTimeout(cb, 1); };
+// https://github.com/jxroot/
+const severityOrder = { 'critical': 4, 'high': 3, 'medium': 2, 'low': 1 };
+const VALID_TLDS = new Set(['com', 'org', 'net', 'edu', 'gov', 'mil', 'int', 'io', 'ai', 'app', 'dev', 'uk', 'us', 'ca', 'au', 'de', 'fr', 'jp', 'cn', 'in', 'br', 'mx', 'ru', 'ir', 'xyz', 'online', 'tech', 'site', 'store', 'cloud', 'info', 'biz', 'me', 'tv', 'cc', 'co', 'so', 'gg', 'vc', 'eu', 'asia']);
+const EXCLUDED_PATTERNS = [/\.exe$/i, /\.dll$/i, /\.msc$/i, /\.lnk$/i, /\.cmd$/i, /\.bat$/i, /\.ps1$/i, /^c:\\/i, /^d:\\/i, /^%[^%]+%/i];
+const DOMAIN_REGEX = /\b(?:[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]\.)+[a-zA-Z]{2,}\b/g;
+const IP_PATTERN = /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/g;
+const URL_PATTERN = /https?:\/\/[^\s"'<>]+/gi;
+const UNC_PATTERN = /\\\\[^\\\s]+(?:\\[^\\\s]+)*/g;
+const POWERSHELL_PATTERN = /(?:powershell|pwsh)(?:\s+(?:-[a-z]+|\+[a-z]+))*\s+(?:-enc(?:odedcommand)?\s+[^\s]+|-[^\s]+\s+[^\n]+|"[^"]*"|'[^']*'|[^\n;]+)/gi;
+const CMD_PATTERN = /cmd(?:\s+\/c)?\s+(?:\/c\s+)?(?:[^\n;&|]*(?:&&?|\|\|?)?[^\n;&|]*)+/gi;
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#39;')
+              .replace(/`/g, '&#96;');
+}
+
+function showNotification(message, type) {
+    let notif = document.createElement('div');
+    notif.className = 'notification ' + (type || 'success');
+    notif.innerHTML = message;
+    document.body.appendChild(notif);
+    setTimeout(() => notif.remove(), 3000);
+}
+
+function toggleTheme() {
+    let root = document.documentElement;
+    let btn = document.getElementById('themeToggle');
+    if (root.classList.contains('light')) {
+        root.classList.remove('light');
+        btn.innerHTML = '🌙';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        root.classList.add('light');
+        btn.innerHTML = '☀️';
+        localStorage.setItem('theme', 'light');
+    }
+}
+if (localStorage.getItem('theme') === 'light') {
+    document.documentElement.classList.add('light');
+    document.getElementById('themeToggle').innerHTML = '☀️';
+}
+
+function isValidDomain(str) {
+    if (!str || str.length < 4) return false;
+    for (let i = 0; i < EXCLUDED_PATTERNS.length; i++) {
+        if (EXCLUDED_PATTERNS[i].test(str)) return false;
+    }
+    let parts = str.toLowerCase().split('.');
+    if (parts.length < 2) return false;
+    if (!VALID_TLDS.has(parts[parts.length - 1])) return false;
+    if (str.match(/^\d+\.\d+\.\d+\.\d+$/)) return false;
+    return true;
+}
+
+function buildSearchCache() {
+    AppState.searchCache = AppState.lnkData.map(function(item) {
+        return {
+            nameLow: (item.Name || '').toLowerCase(),
+            targetLow: (item.TargetPath || '').toLowerCase(),
+            argsLow: (item.Arguments || '').toLowerCase(),
+            dirLow: (item.Directory || '').toLowerCase(),
+            pathLow: (item.FullPath || '').toLowerCase(),
+            combined: ((item.Name || '') + ' ' + (item.TargetPath || '') + ' ' + (item.Arguments || '') + ' ' + (item.Directory || '') + ' ' + (item.FullPath || '')).toLowerCase(),
+            original: item
+        };
+    });
+}
+
+function filterDataByQuery(query) {
+    if (!query.trim()) return AppState.lnkData.slice();
+    let lowerQuery = query.toLowerCase();
+    let parts = lowerQuery.split(' ');
+    return AppState.searchCache.filter(function(cacheItem) {
+        let match = true;
+        for (let p = 0; p < parts.length; p++) {
+            let part = parts[p];
+            if (!part) continue;
+            if (part.includes(':')) {
+                let idx = part.indexOf(':');
+                let key = part.substring(0, idx);
+                let val = part.substring(idx + 1);
+                switch(key) {
+                    case 'name': if (!cacheItem.nameLow.includes(val)) match = false; break;
+                    case 'target': if (!cacheItem.targetLow.includes(val)) match = false; break;
+                    case 'args': if (!cacheItem.argsLow.includes(val)) match = false; break;
+                    case 'dir': if (!cacheItem.dirLow.includes(val)) match = false; break;
+                    case 'path': if (!cacheItem.pathLow.includes(val)) match = false; break;
+                    default: if (!cacheItem.combined.includes(part)) match = false;
+                }
+            } else {
+                if (!cacheItem.combined.includes(part)) match = false;
+            }
+            if (!match) break;
+        }
+        return match;
+    }).map(function(c) { return c.original; });
+}
+
+function insertSearchTag(tag) {
+    let input = document.getElementById("search");
+    if (input) {
+        input.value = input.value ? input.value + ' ' + tag : tag;
+        input.focus();
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+}
+
+function renderTableChunked(rows, startIndex, chunkSize, callback) {
+    let tbody = document.getElementById("tbody");
+    if (!tbody) return;
+    let endIndex = Math.min(startIndex + chunkSize, rows.length);
+    let fragment = document.createDocumentFragment();
+    for (let i = startIndex; i < endIndex; i++) {
+        let r = rows[i];
+        let row = document.createElement('tr');
+        row.innerHTML = '<td>' + escapeHtml(r.Name || '-') + '</td>' +
+                        '<td class="path">' + escapeHtml(r.TargetPath || '-') + '</td>' +
+                        '<td class="path">' + escapeHtml(r.Arguments || '-') + '</td>' +
+                        '<td class="path">' + escapeHtml(r.Directory || '-') + '</td>' +
+                        '<td>' + (r.SizeKB || '-') + '</td>' +
+                        '<td class="path">' + escapeHtml(r.FullPath || '-') + '</td>';
+        fragment.appendChild(row);
+    }
+    tbody.appendChild(fragment);
+    if (endIndex < rows.length) {
+        scheduleIdle(() => renderTableChunked(rows, endIndex, chunkSize, callback));
+    } else if (callback) {
+        callback();
+    }
+}
+
+function renderTablePage() {
+    let tbody = document.getElementById("tbody");
+    if (!tbody) return;
+    let totalRecords = AppState.filteredData ? AppState.filteredData.length : 0;
+    if (totalRecords === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">🔍 No results found</td<tr>';
+        return;
+    }
+    let totalPages = Math.ceil(totalRecords / AppState.rowsPerPage);
+    if (AppState.currentPage > totalPages) AppState.currentPage = totalPages;
+    let start = (AppState.currentPage - 1) * AppState.rowsPerPage;
+    let end = Math.min(start + AppState.rowsPerPage, totalRecords);
+    let pageRows = AppState.filteredData.slice(start, end);
+    tbody.innerHTML = '';
+    renderTableChunked(pageRows, 0, 50, null);
+    renderPagination();
+}
+
+function renderPagination() {
+    let container = document.getElementById("paginationContainer");
+    if (!container) return;
+    let totalRecords = AppState.filteredData ? AppState.filteredData.length : 0;
+    if (totalRecords === 0) { 
+        container.innerHTML = ''; 
+        return; 
+    }
+    let totalPages = Math.ceil(totalRecords / AppState.rowsPerPage);
+    if (totalPages <= 1) { 
+        container.innerHTML = ''; 
+        return; 
+    }
+    let html = '<div class="pagination">';
+    html += '<button onclick="changePage(1)" ' + (AppState.currentPage === 1 ? 'disabled' : '') + '>⏮ First</button>';
+    html += '<button onclick="changePage(' + (AppState.currentPage - 1) + ')" ' + (AppState.currentPage === 1 ? 'disabled' : '') + '>◀ Prev</button>';
+    let startPage = Math.max(1, AppState.currentPage - 2);
+    let endPage = Math.min(totalPages, AppState.currentPage + 2);
+    for (let i = startPage; i <= endPage; i++) {
+        html += '<button onclick="changePage(' + i + ')" class="' + (i === AppState.currentPage ? 'active-page' : '') + '">' + i + '</button>';
+    }
+    html += '<button onclick="changePage(' + (AppState.currentPage + 1) + ')" ' + (AppState.currentPage === totalPages ? 'disabled' : '') + '>Next ▶</button>';
+    html += '<button onclick="changePage(' + totalPages + ')" ' + (AppState.currentPage === totalPages ? 'disabled' : '') + '>Last ⏭</button>';
+    html += '<span class="page-info">Page ' + AppState.currentPage + ' of ' + totalPages + ' (' + totalRecords + ' records)</span>';
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function changePage(page) {
+    AppState.currentPage = page;
+    renderTablePage();
+}
+
+function setupTableWithPagination(query) {
+    AppState.filteredData = query ? filterDataByQuery(query) : AppState.lnkData.slice();
+    AppState.currentPage = 1;
+    renderTablePage();
+    let countSpan = document.getElementById("filteredCount");
+    if (countSpan) countSpan.innerText = AppState.filteredData.length;
+}
+
+function renderAnalysisTable() {
+    let container = document.getElementById("analysisTableContainer");
+    if (!container) return;
+    if (!AppState.lnkData.length) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No Data Available</div><div class="empty-message">Load a JSON file to see LNK analysis results</div><div class="empty-hint">💡 Please upload a JSON file using the upload area above</div></div>';
+        return;
+    }
+    container.innerHTML = '<div class="card"><div class="card-header"><div class="card-title">📋 LNK File Analysis</div><div><span id="filteredCount">' + AppState.lnkData.length + '</span> / <span id="totalCount">' + AppState.lnkData.length + '</span></div></div><div class="card-body"><div class="search-box"><div class="search-icon">🔍</div><input type="text" class="search-input" id="search" placeholder="Search in ' + AppState.lnkData.length + ' records..."></div><div class="search-tags"><div class="search-tag" onclick="insertSearchTag(\'name:\')">name: <span class="search-tag-desc">(filename)</span></div><div class="search-tag" onclick="insertSearchTag(\'target:\')">target: <span class="search-tag-desc">(target path)</span></div><div class="search-tag" onclick="insertSearchTag(\'args:\')">args: <span class="search-tag-desc">(arguments)</span></div><div class="search-tag" onclick="insertSearchTag(\'dir:\')">dir: <span class="search-tag-desc">(directory)</span></div><div class="search-tag" onclick="insertSearchTag(\'path:\')">path: <span class="search-tag-desc">(full path)</span></div><div class="search-tag" onclick="insertSearchTag(\'text:\')">text: <span class="search-tag-desc">(any text)</span></div></div><table class="data-table"><thead><tr><th>Name</th><th>Target</th><th>Arguments</th><th>Directory</th><th>Size (KB)</th><th>Full Path</th></tr></thead><tbody id="tbody"></tbody></table><div id="paginationContainer"></div></div></div>';
+    AppState.filteredData = AppState.lnkData.slice();
+    renderTablePage();
+    let searchInput = document.getElementById("search");
+    if (searchInput) {
+        searchInput.removeEventListener('input', setupTableWithPagination);
+        searchInput.addEventListener("input", function(e) { setupTableWithPagination(e.target.value); });
+    }
+}
+
+function extractIOCsBatch(startIndex, callback) {
+    let iocs = AppState.iocs || { ips: new Map(), urls: new Map(), domains: new Map(), uncPaths: new Map(), powershellCmds: new Map(), cmdLines: new Map() };
+    let batchSize = 500;
+    let endIndex = Math.min(startIndex + batchSize, AppState.lnkData.length);
+    for (let idx = startIndex; idx < endIndex; idx++) {
+        let file = AppState.lnkData[idx];
+        let text = (file.Arguments || '') + ' ' + (file.TargetPath || '') + ' ' + (file.WorkingDir || '');
+        let name = file.Name || 'unknown';
+        let path = file.FullPath || '';
+        let ips = text.match(IP_PATTERN);
+        if (ips) { for (let i = 0; i < ips.length; i++) { let ip = ips[i]; if (!iocs.ips.has(ip)) iocs.ips.set(ip, []); iocs.ips.get(ip).push({ fileName: name, fullPath: path }); } }
+        let urls = text.match(URL_PATTERN);
+        if (urls) { for (let i = 0; i < urls.length; i++) { let url = urls[i]; if (!iocs.urls.has(url)) iocs.urls.set(url, []); iocs.urls.get(url).push({ fileName: name, fullPath: path }); } }
+        let domains = text.match(DOMAIN_REGEX);
+        if (domains) { for (let i = 0; i < domains.length; i++) { let dom = domains[i]; if (isValidDomain(dom)) { if (!iocs.domains.has(dom)) iocs.domains.set(dom, []); iocs.domains.get(dom).push({ fileName: name, fullPath: path }); } } }
+        let uncs = text.match(UNC_PATTERN);
+        if (uncs) { for (let i = 0; i < uncs.length; i++) { let unc = uncs[i]; if (!iocs.uncPaths.has(unc)) iocs.uncPaths.set(unc, []); iocs.uncPaths.get(unc).push({ fileName: name, fullPath: path }); } }
+        let psCmds = text.match(POWERSHELL_PATTERN);
+        if (psCmds) { for (let i = 0; i < psCmds.length; i++) { let psc = psCmds[i]; if (!iocs.powershellCmds.has(psc)) iocs.powershellCmds.set(psc, []); iocs.powershellCmds.get(psc).push({ fileName: name, fullPath: path }); } }
+        let cmds = text.match(CMD_PATTERN);
+        if (cmds) { for (let i = 0; i < cmds.length; i++) { let cl = cmds[i]; if (!iocs.cmdLines.has(cl)) iocs.cmdLines.set(cl, []); iocs.cmdLines.get(cl).push({ fileName: name, fullPath: path }); } }
+    }
+    AppState.iocs = iocs;
+    if (endIndex < AppState.lnkData.length) {
+        scheduleIdle(() => extractIOCsBatch(endIndex, callback));
+    } else if (callback) {
+        callback();
+    }
+}
+
+function extractIOCs() {
+    if (!AppState.lnkData.length) { renderEmptyIOCs(); return; }
+    AppState.iocs = { ips: new Map(), urls: new Map(), domains: new Map(), uncPaths: new Map(), powershellCmds: new Map(), cmdLines: new Map() };
+    extractIOCsBatch(0, function() {
+        document.getElementById("totalIPs").innerText = AppState.iocs.ips.size;
+        document.getElementById("totalURLs").innerText = AppState.iocs.urls.size;
+        document.getElementById("totalDomains").innerText = AppState.iocs.domains.size;
+        document.getElementById("totalUNCs").innerText = AppState.iocs.uncPaths.size;
+        renderIOCs();
+    });
+}
+
+function renderEmptyIOCs() {
+    let c = document.getElementById("iocContainer");
+    if (c) c.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No Data Available</div><div class="empty-message">Load LNK data to extract Indicators of Compromise</div><div class="empty-hint">💡 Please upload a JSON file using the Analysis tab</div></div>';
+}
+
+function toggleIOC(id) {
+    let d = document.getElementById('ioc-details-' + id);
+    let a = document.getElementById('ioc-arrow-' + id);
+    if (d && a) { d.classList.toggle('expanded'); a.classList.toggle('expanded'); }
+}
+
+function renderIOCs() {
+    let container = document.getElementById("iocContainer");
+    if (!container) return;
+    let iocs = AppState.iocs;
+    if (!iocs || (iocs.ips.size === 0 && iocs.urls.size === 0 && iocs.domains.size === 0 && iocs.uncPaths.size === 0)) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">No IOCs Found</div><div class="empty-message">No suspicious indicators were detected in the loaded data</div><div class="empty-hint">💡 Try loading a different JSON file</div></div>';
+        return;
+    }
+    function renderSection(title, icon, dataMap, badgeClass, type) {
+        if (dataMap.size === 0) return '';
+        let itemsHtml = '', index = 0;
+        for (let [value, sources] of dataMap) {
+            let uid = type + '-' + (index++);
+            let srcHtml = '';
+            for (let s = 0; s < sources.length; s++) {
+                srcHtml += '<div class="ioc-source-item"><div class="ioc-source-name">📄 ' + escapeHtml(sources[s].fileName) + '</div><div class="ioc-source-path">📂 ' + escapeHtml(sources[s].fullPath) + '</div></div>';
+            }
+            itemsHtml += '<div class="ioc-item"><div class="ioc-header" onclick="toggleIOC(\'' + uid + '\')"><span class="ioc-value"><span class="ioc-badge ' + badgeClass + '">' + escapeHtml(value) + '</span></span><span class="ioc-arrow" id="ioc-arrow-' + uid + '">▶</span></div><div class="ioc-details" id="ioc-details-' + uid + '"><div class="ioc-details-content"><div style="margin-bottom: 8px; font-weight: 600; color: var(--text-secondary);">📁 Found in ' + sources.length + ' file(s):</div>' + srcHtml + '</div></div></div>';
+        }
+        return '<div class="card" style="margin: 0;"><div class="card-header"><div class="card-title">' + icon + ' ' + title + ' (' + dataMap.size + ')</div></div><div class="card-body" style="padding: 1rem;">' + itemsHtml + '</div></div>';
+    }
+    container.innerHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 20px;">' +
+        renderSection('IP Addresses', '🌐', iocs.ips, 'ioc-ip', 'ip') +
+        renderSection('URLs', '🔗', iocs.urls, 'ioc-url', 'url') +
+        renderSection('Domains', '🏠', iocs.domains, 'ioc-domain', 'domain') +
+        renderSection('UNC Paths', '💾', iocs.uncPaths, 'ioc-unc', 'unc') +
+        renderSection('PowerShell Commands', '⚡', iocs.powershellCmds, 'ioc-powershell', 'ps') +
+        renderSection('CMD Commands', '💻', iocs.cmdLines, 'ioc-cmd', 'cmd') +
+        '</div>';
+}
+
+function compileRules() {
+    AppState.compiledRules = [];
+    for (let i = 0; i < AppState.rules.length; i++) {
+        let r = AppState.rules[i];
+        try {
+            if (r.pattern.length > 1000) throw new Error('Pattern too long');
+            AppState.compiledRules.push({
+                id: r.id, name: r.name, severity: r.severity, field: r.field,
+                regex: new RegExp(r.pattern, 'i'), enabled: r.enabled, description: r.description
+            });
+        } catch(e) {
+            console.warn('Invalid regex for rule:', r.name, e);
+            AppState.compiledRules.push({ id: r.id, name: r.name, severity: r.severity, field: r.field, regex: null, enabled: r.enabled, description: r.description });
+        }
+    }
+}
+
+function loadDefaultRules() {
+    AppState.rules = [
+        { id: 1, name: "LOLBin Execution", severity: "high", pattern: "(regsvr32|wmic|powershell\\.exe|msbuild|certutil|bitsadmin)", field: "Arguments", description: "Living-off-the-Land binaries", enabled: true },
+        { id: 2, name: "Encoded Payload", severity: "critical", pattern: "(-enc|-encodedcommand|FromBase64String|IEX|DownloadString)", field: "Arguments", description: "Base64 encoded commands", enabled: true },
+        { id: 3, name: "Remote Payload Delivery", severity: "high", pattern: "(http://|https://|ftp://|raw\\.githubusercontent\\.com)", field: "Arguments", description: "Downloads from remote sources", enabled: true },
+        { id: 4, name: "Temp Execution", severity: "high", pattern: "(%temp%|%appdata%|\\\\AppData\\\\Local\\\\Temp)", field: "Arguments", description: "Executes from temp directories", enabled: true },
+        { id: 5, name: "Shortcut Hijack", severity: "critical", pattern: "(\\.lnk|shell:|explorer\\.exe.*\\.lnk)", field: "Arguments", description: "LNK abuse patterns", enabled: true },
+        { id: 6, name: "Fake Extension", severity: "high", pattern: "(\\.pdf\\.exe|\\.doc\\.exe|\\.jpg\\.exe)", field: "TargetPath", description: "Double extension trick", enabled: true },
+        { id: 7, name: "UAC Bypass", severity: "critical", pattern: "(fodhelper|eventvwr|sdclt|computerdefaults|cmstp)", field: "Arguments", description: "UAC bypass techniques", enabled: true },
+        { id: 8, name: "Persistence", severity: "high", pattern: "(Startup|Run|RunOnce|ScheduledTasks)", field: "TargetPath", description: "Persistence mechanisms", enabled: true },
+        { id: 9, name: "Fileless Execution", severity: "critical", pattern: "(powershell.*-nop|hidden|iex|invoke-webrequest)", field: "Arguments", description: "Fileless malware patterns", enabled: true },
+        { id: 10, name: "Advanced Chain", severity: "critical", pattern: "(&&|;|\\|\\||\\|.*(powershell|cmd|mshta))", field: "Arguments", description: "Complex command chaining", enabled: true },
+        { id: 11, name: "Long Arguments", severity: "medium", pattern: "(.{200,})", field: "Arguments", description: "Abnormally long arguments", enabled: true },
+        { id: 12, name: "High Entropy", severity: "medium", pattern: "([A-Za-z0-9+/]{80,}={0,2})", field: "Arguments", description: "Base64 encoded strings", enabled: true },
+        { id: 13, name: "Suspicious Process", severity: "high", pattern: "(cmd|powershell|rundll32|mshta|wscript|cscript)", field: "Arguments", description: "Suspicious process execution", enabled: true },
+        { id: 14, name: "Command Chaining", severity: "critical", pattern: "(&&|;|\\|\\|)", field: "Arguments", description: "Command chaining", enabled: true },
+        { id: 15, name: "Suspicious Location", severity: "medium", pattern: "(temp|appdata|windows\\\\temp)", field: "TargetPath", description: "Suspicious file location", enabled: true },
+        { id: 16, name: "Network Access", severity: "high", pattern: "(\\\\\\\\|http|https)", field: "TargetPath", description: "Network resource access", enabled: true }
+    ];
+    compileRules();
+    renderRules();
+}
+
+function renderRules() {
+    let container = document.getElementById("ruleEditor");
+    if (!container) return;
+    let html = '<table class="data-table"><thead><tr><th style="width:40px">Run</th><th>Severity</th><th>Rule Name</th><th>Field</th><th>Pattern</th><th>Description</th></tr></thead><tbody>';
+    for (let i = 0; i < AppState.rules.length; i++) {
+        let r = AppState.rules[i];
+        html += '<tr><td style="text-align:center"><input type="checkbox" class="rule-checkbox" ' + (r.enabled ? 'checked' : '') + ' onchange="toggleRule(' + r.id + ', this.checked)"></td><td><span class="rule-badge rule-' + r.severity + '">' + r.severity.toUpperCase() + '</span></td><td>' + escapeHtml(r.name) + '</td><td>' + escapeHtml(r.field) + '</td><td><code style="font-size:0.7rem">' + escapeHtml(r.pattern.substring(0, 50)) + (r.pattern.length > 50 ? '...' : '') + '</code></td><td>' + escapeHtml(r.description) + '</td></tr>';
+    }
+    html += '</tbody></table>';
+    container.innerHTML = html;
+    document.getElementById("ruleCount").innerText = AppState.rules.length;
+    updateActiveRuleCount();
+}
+
+function toggleRule(ruleId, isEnabled) {
+    for (let i = 0; i < AppState.rules.length; i++) {
+        if (AppState.rules[i].id === ruleId) { AppState.rules[i].enabled = isEnabled; break; }
+    }
+    compileRules();
+    updateActiveRuleCount();
+}
+
+function selectAllRules(select) {
+    for (let i = 0; i < AppState.rules.length; i++) AppState.rules[i].enabled = select;
+    compileRules();
+    renderRules();
+    showNotification((select ? 'Selected' : 'Deselected') + ' all rules', "success");
+}
+
+function updateActiveRuleCount() {
+    let el = document.getElementById("activeRuleCount");
+    if (!el) return;
+    let c = 0;
+    for (let i = 0; i < AppState.rules.length; i++) if (AppState.rules[i].enabled) c++;
+    el.innerText = c;
+}
+
+function groupViolationsByFile(flat) {
+    let grouped = new Map();
+    for (let i = 0; i < flat.length; i++) {
+        let v = flat[i];
+        let fn = v.file;
+        if (!grouped.has(fn)) {
+            grouped.set(fn, { file: fn, fullPath: v.fullPath, highestSeverity: v.severity, rules: new Map(), allDetails: [] });
+        }
+        let g = grouped.get(fn);
+        if (!g.rules.has(v.rule)) g.rules.set(v.rule, v.severity);
+        g.allDetails.push(v.rule + ': ' + v.details);
+        if (severityOrder[v.severity] > severityOrder[g.highestSeverity]) g.highestSeverity = v.severity;
+    }
+    let result = [];
+    for (let [fileName, g] of grouped) {
+        let rulesArr = [];
+        for (let [ruleName, sev] of g.rules) rulesArr.push({ name: ruleName, severity: sev });
+        rulesArr.sort(function(a,b) { return severityOrder[b.severity] - severityOrder[a.severity]; });
+        result.push({ file: fileName, fullPath: g.fullPath, highestSeverity: g.highestSeverity, rules: rulesArr, allDetails: g.allDetails });
+    }
+    return result;
+}
+
+function renderViolationsContainer() {
+    let container = document.getElementById("violationsContainer");
+    if (!container) return;
+    if (!AppState.groupedViolations.length) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">No Violations Found</div><div class="empty-message">All files passed the security checks</div><div class="empty-hint">💡 Select rules and click "Analyze with Selected Rules"</div></div>';
+        return;
+    }
+    let html = '<table class="data-table"><thead><tr><th>Severity</th><th>File Name</th><th>Full Path</th><th>Rules Detected</th><th>Details</th></tr></thead><tbody>';
+    for (let i = 0; i < AppState.groupedViolations.length; i++) {
+        let v = AppState.groupedViolations[i];
+        let rulesHtml = '';
+        for (let j = 0; j < v.rules.length; j++) rulesHtml += '<span class="rule-tag">' + escapeHtml(v.rules[j].name) + '</span>';
+        html += '<tr><td><span class="rule-badge rule-' + v.highestSeverity + '">' + v.highestSeverity.toUpperCase() + '</span></td><td><strong>' + escapeHtml(v.file) + '</strong></td><td class="path">' + escapeHtml(v.fullPath || '-') + '</td><td>' + rulesHtml + '</td><td><div class="path">' + escapeHtml(v.allDetails[0] || '') + '</div>' + (v.allDetails.length > 1 ? '<div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">+ ' + (v.allDetails.length - 1) + ' more issues</div>' : '') + '</td></tr>';
+    }
+    html += '</tbody></table>';
+    container.innerHTML = html;
+}
+
+function runRules() {
+    if (!AppState.lnkData.length) { showNotification("Please load LNK data first in the Analysis tab", "error"); return; }
+    let active = [];
+    for (let i = 0; i < AppState.compiledRules.length; i++) {
+        if (AppState.compiledRules[i].enabled && AppState.compiledRules[i].regex) active.push(AppState.compiledRules[i]);
+    }
+    if (active.length === 0) { showNotification("Please enable at least one rule", "error"); return; }
+    let violations = [];
+    for (let i = 0; i < AppState.lnkData.length; i++) {
+        let file = AppState.lnkData[i];
+        for (let j = 0; j < active.length; j++) {
+            let rule = active[j];
+            let val = file[rule.field] || "";
+            if (rule.regex) {
+                rule.regex.lastIndex = 0;
+                if (rule.regex.test(val)) {
+                    violations.push({ severity: rule.severity, rule: rule.name, file: file.Name || "Unknown", fullPath: file.FullPath || "", details: rule.field + ": " + val.substring(0, 100) + (val.length > 100 ? '...' : '') });
+                }
+            }
+        }
+    }
+    AppState.flatViolations = violations;
+    AppState.groupedViolations = groupViolationsByFile(violations);
+    document.getElementById("fileWithIssues").innerText = AppState.groupedViolations.length;
+    let crit = 0;
+    for (let i = 0; i < AppState.groupedViolations.length; i++) if (AppState.groupedViolations[i].highestSeverity === 'critical') crit++;
+    document.getElementById("criticalCountStat").innerText = crit;
+    renderViolationsContainer();
+    showNotification("✅ Found " + AppState.groupedViolations.length + " files with issues (" + violations.length + " total violations)", "success");
+}
+
+function getFileKey(item) {
+    let name = item.Name || '';
+    let path = item.FullPath || '';
+    let normalizedPath = path.toLowerCase().replace(/\\/g, '/');
+    let normalizedName = name.toLowerCase();
+    return normalizedPath + '|' + normalizedName;
+}
+
+function processFile(file, onSuccess) {
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            let data = JSON.parse(e.target.result);
+            if (!Array.isArray(data)) { showNotification("Data must be an array", "error"); return; }
+            onSuccess(data);
+        } catch(err) { showNotification("Error parsing JSON: " + err.message, "error"); }
+    };
+    reader.readAsText(file);
+}
+
+document.getElementById("mainDataFile").addEventListener("change", function(e) {
+    if (e.target.files[0]) {
+        processFile(e.target.files[0], function(data) {
+            AppState.lnkData = data;
+            buildSearchCache();
+            renderAnalysisTable();
+            extractIOCs();
+            showNotification("✅ Loaded " + AppState.lnkData.length + " records", "success");
+        });
+    }
+});
+
+document.getElementById("oldFile").addEventListener("change", function(e) {
+    if (e.target.files[0]) {
+        processFile(e.target.files[0], function(data) {
+            AppState.oldDiffData = data;
+            document.getElementById("oldFileName").innerHTML = "📄 " + e.target.files[0].name;
+            showNotification("Loaded old version", "success");
+        });
+    }
+});
+
+document.getElementById("newFile").addEventListener("change", function(e) {
+    if (e.target.files[0]) {
+        processFile(e.target.files[0], function(data) {
+            AppState.newDiffData = data;
+            document.getElementById("newFileName").innerHTML = "📄 " + e.target.files[0].name;
+            showNotification("Loaded new version", "success");
+        });
+    }
+});
+
+function setupDragAndDrop(areaId, onFileDrop) {
+    let area = document.getElementById(areaId);
+    if (!area) return;
+    area.addEventListener('dragover', function(e) { e.preventDefault(); area.classList.add('drag-over'); });
+    area.addEventListener('dragleave', function() { area.classList.remove('drag-over'); });
+    area.addEventListener('drop', function(e) { e.preventDefault(); area.classList.remove('drag-over'); let file = e.dataTransfer.files[0]; if (file && file.name.endsWith('.json')) onFileDrop(file); else showNotification('Please drop a valid JSON file', 'error'); });
+}
+
+setupDragAndDrop('mainUploadArea', function(file) {
+    document.getElementById("mainFileName").innerHTML = "📄 " + file.name;
+    processFile(file, function(data) {
+        AppState.lnkData = data;
+        buildSearchCache();
+        renderAnalysisTable();
+        extractIOCs();
+        showNotification("✅ Loaded " + AppState.lnkData.length + " records", "success");
+    });
+});
+
+setupDragAndDrop('oldUploadArea', function(file) {
+    document.getElementById("oldFileName").innerHTML = "📄 " + file.name;
+    processFile(file, function(data) { AppState.oldDiffData = data; showNotification("Loaded old version", "success"); });
+});
+
+setupDragAndDrop('newUploadArea', function(file) {
+    document.getElementById("newFileName").innerHTML = "📄 " + file.name;
+    processFile(file, function(data) { AppState.newDiffData = data; showNotification("Loaded new version", "success"); });
+});
+
+function renderDiffContainer() {
+    let c = document.getElementById("diffContainer");
+    if (!c) return;
+    if (!AppState.oldDiffData || !AppState.newDiffData) {
+        c.innerHTML = '<div class="empty-state"><div class="empty-icon">📂</div><div class="empty-title">No Comparison Data</div><div class="empty-message">Upload both old and new JSON files to compare</div><div class="empty-hint">💡 Use the upload areas above to load your files</div></div>';
+        document.getElementById("diffStats").innerHTML = "";
+    }
+}
+
+function getSelectedFields() {
+    let cb = document.querySelectorAll(".df:checked");
+    let f = [];
+    for (let i = 0; i < cb.length; i++) f.push(cb[i].value);
+    return f;
+}
+
+function diffObj(o, n, fields) {
+    let changes = [];
+    for (let i = 0; i < fields.length; i++) {
+        let f = fields[i];
+        let oldVal = (o[f] !== undefined && o[f] !== null) ? String(o[f]) : "-";
+        let newVal = (n[f] !== undefined && n[f] !== null) ? String(n[f]) : "-";
+        if (oldVal !== newVal) {
+            changes.push({ 
+                field: f, 
+                old: oldVal.length > 150 ? oldVal.substring(0, 150) + '...' : oldVal, 
+                new: newVal.length > 150 ? newVal.substring(0, 150) + '...' : newVal 
+            });
+        }
+    }
+    return changes;
+}
+
+function runDiff() {
+    if (!AppState.oldDiffData || !AppState.newDiffData) { 
+        showNotification("Please load both old and new JSON files", "error"); 
+        renderDiffContainer(); 
+        return; 
+    }
+    
+    let fields = getSelectedFields();
+    if (fields.length === 0) {
+        showNotification("Please select at least one field to compare", "error");
+        return;
+    }
+    
+    let oldMap = new Map();
+    for (let i = 0; i < AppState.oldDiffData.length; i++) {
+        let item = AppState.oldDiffData[i];
+        let key = getFileKey(item);
+        if (!oldMap.has(key)) {
+            oldMap.set(key, []);
+        }
+        oldMap.get(key).push(item);
+    }
+    
+    let newMap = new Map();
+    for (let i = 0; i < AppState.newDiffData.length; i++) {
+        let item = AppState.newDiffData[i];
+        let key = getFileKey(item);
+        if (!newMap.has(key)) {
+            newMap.set(key, []);
+        }
+        newMap.get(key).push(item);
+    }
+    
+    let allKeys = new Set([...oldMap.keys(), ...newMap.keys()]);
+    let results = [];
+    
+    for (let key of allKeys) {
+        let oldItems = oldMap.get(key) || [];
+        let newItems = newMap.get(key) || [];
+        
+        if (oldItems.length === 0 && newItems.length > 0) {
+            for (let newItem of newItems) {
+                results.push({
+                    type: "NEW",
+                    name: newItem.Name || "Unknown",
+                    fullPath: newItem.FullPath || key,
+                    changes: [{ field: "File", old: "-", new: "Created" }]
+                });
+            }
+        } else if (oldItems.length > 0 && newItems.length === 0) {
+            for (let oldItem of oldItems) {
+                results.push({
+                    type: "DELETED",
+                    name: oldItem.Name || "Unknown",
+                    fullPath: oldItem.FullPath || key,
+                    changes: [{ field: "File", old: "Removed", new: "-" }]
+                });
+            }
+        } else {
+            let maxComparisons = Math.min(oldItems.length, newItems.length);
+            for (let i = 0; i < maxComparisons; i++) {
+                let diff = diffObj(oldItems[i], newItems[i], fields);
+                if (diff.length > 0) {
+                    results.push({
+                        type: "MODIFIED",
+                        name: newItems[i].Name || oldItems[i].Name || "Unknown",
+                        fullPath: newItems[i].FullPath || oldItems[i].FullPath || key,
+                        changes: diff
+                    });
+                }
+            }
+            if (oldItems.length > newItems.length) {
+                for (let i = maxComparisons; i < oldItems.length; i++) {
+                    results.push({
+                        type: "DELETED",
+                        name: oldItems[i].Name || "Unknown",
+                        fullPath: oldItems[i].FullPath || key,
+                        changes: [{ field: "File", old: "Removed (duplicate)", new: "-" }]
+                    });
+                }
+            } else if (newItems.length > oldItems.length) {
+                for (let i = maxComparisons; i < newItems.length; i++) {
+                    results.push({
+                        type: "NEW",
+                        name: newItems[i].Name || "Unknown",
+                        fullPath: newItems[i].FullPath || key,
+                        changes: [{ field: "File", old: "-", new: "Created (duplicate)" }]
+                    });
+                }
+            }
+        }
+    }
+    
+    let container = document.getElementById("diffContainer");
+    let statsDiv = document.getElementById("diffStats");
+    let newCount = 0, modCount = 0, delCount = 0;
+    
+    for (let r of results) {
+        if (r.type === "NEW") newCount++;
+        else if (r.type === "MODIFIED") modCount++;
+        else if (r.type === "DELETED") delCount++;
+    }
+    
+    if (results.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">No Differences Found</div><div class="empty-message">The two datasets are identical</div></div>';
+        statsDiv.innerHTML = "No changes detected";
+        return;
+    }
+    
+    let html = '<table class="data-table"><thead><tr><th>Status</th><th>Name</th><th>Full Path</th><th>Changes</th></tr></thead><tbody>';
+    
+    for (let r of results) {
+        let changesHtml = '';
+        for (let c of r.changes) {
+            changesHtml += '<div style="margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 6px;">' +
+                '<span class="rule-tag critical">' + escapeHtml(c.field) + '</span><br>' +
+                '<span style="color: var(--danger);">- OLD: ' + escapeHtml(c.old) + '</span><br>' +
+                '<span style="color: var(--success);">+ NEW: ' + escapeHtml(c.new) + '</span>' +
+                '</div>';
+        }
+        
+        let statusClass = '';
+        let statusText = '';
+        if (r.type === "NEW") { statusClass = 'diff-new'; statusText = 'NEW'; }
+        else if (r.type === "MODIFIED") { statusClass = 'diff-mod'; statusText = 'MODIFIED'; }
+        else { statusClass = 'diff-del'; statusText = 'DELETED'; }
+        
+        html += '<tr>' +
+            '<td class="' + statusClass + '">' + statusText + '</td>' +
+            '<td><strong>' + escapeHtml(r.name) + '</strong></td>' +
+            '<td class="path">' + escapeHtml(r.fullPath) + '</td>' +
+            '<td>' + changesHtml + '</td>' +
+        '</tr>';
+    }
+    
+    html += '</tbody></table>';
+    container.innerHTML = html;
+    statsDiv.innerHTML = "📊 NEW: " + newCount + " | ✏️ MODIFIED: " + modCount + " | ❌ DELETED: " + delCount;
+}
+
+function copyScriptToClipboard() {
+    let script = document.getElementById("scriptContent").innerText
+    navigator.clipboard.writeText(script).then(function() { showNotification('✅ Script copied to clipboard!', 'success'); }).catch(function() { showNotification('Failed to copy script', 'error'); });
+}
+
+function switchTab(tab) {
+    AppState.currentTab = tab;
+    let tabs = document.querySelectorAll('.tab');
+    for (let i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+    let contents = document.querySelectorAll('.tab-content');
+    for (let i = 0; i < contents.length; i++) contents[i].classList.remove('active');
+    if (tab === 'analysis') {
+        tabs[0].classList.add('active');
+        document.getElementById('analysisTab').classList.add('active');
+        renderAnalysisTable();
+    } else if (tab === 'rules') {
+        tabs[1].classList.add('active');
+        document.getElementById('rulesTab').classList.add('active');
+        if (AppState.rules.length === 0) loadDefaultRules();
+        renderViolationsContainer();
+    } else if (tab === 'diff') {
+        tabs[2].classList.add('active');
+        document.getElementById('diffTab').classList.add('active');
+        renderDiffContainer();
+    } else if (tab === 'ioc') {
+        tabs[3].classList.add('active');
+        document.getElementById('iocTab').classList.add('active');
+        if (AppState.lnkData.length) extractIOCs(); else renderEmptyIOCs();
+    } else if (tab === 'script') {
+        tabs[4].classList.add('active');
+        document.getElementById('scriptTab').classList.add('active');
+    }
+}
+
+renderAnalysisTable();
+loadDefaultRules();
+renderViolationsContainer();
+renderDiffContainer();
+renderEmptyIOCs();
+</script>
+</body>
+</html>
+<!-- https://github.com/jxroot/ -->
